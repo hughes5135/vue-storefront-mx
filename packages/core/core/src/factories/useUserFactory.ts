@@ -50,7 +50,7 @@ export const useUserFactory = <USER, UPDATE_USER_PARAMS, REGISTER_USER_PARAMS ex
         error.value.register = null;
         user.value = await _factoryParams.register(providedUser);
       } catch (err) {
-        error.value.register = err.response?.data;
+        error.value.register = err.response?.data || err;
         Logger.error('useUser/register', err);
       } finally {
         loading.value = false;
