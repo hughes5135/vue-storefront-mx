@@ -46,6 +46,9 @@
               label="Remember me"
               class="form__element checkbox"
             />
+            <div v-if="error.login">
+              {{ error.login.graphQLErrors[0].message || error.login.message }}
+            </div>
             <SfButton data-cy="login-btn_submit"
               type="submit"
               class="sf-button--full-width form__button"
@@ -127,6 +130,9 @@
                 class="form__element"
               />
             </ValidationProvider>
+            <div v-if="error.register">
+              {{ error.register.graphQLErrors[0].message || error.register.message }}
+            </div>
             <SfButton
               data-cy="login-btn_submit"
               type="submit"
@@ -150,7 +156,7 @@
   </SfModal>
 </template>
 <script>
-import { ref, watch } from '@vue/composition-api';
+import { reactive, ref, watch } from '@vue/composition-api';
 import { SfModal, SfInput, SfButton, SfCheckbox, SfLoader, SfAlert, SfBar } from '@storefront-ui/vue';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, email } from 'vee-validate/dist/rules';
@@ -186,7 +192,7 @@ export default {
     const isLogin = ref(false);
     const createAccount = ref(false);
     const rememberMe = ref(false);
-    const { register, login, loading } = useUser();
+    const { register, login, loading, error: userError } = useUser();
 
     watch(isLoginModalOpen, () => {
       if (isLoginModalOpen) {
@@ -194,8 +200,22 @@ export default {
       }
     });
 
+    const error = reactive({
+      login: null,
+      register: null
+    });
+
     const handleForm = (fn) => async () => {
       await fn({ user: form.value });
+
+      const hasUserErrors = userError.value.register || userError.value.login;
+      if (hasUserErrors) {
+        error.login = userError.value.login;
+        error.register = userError.value.register;
+        return;
+      }
+      error.login = null;
+      error.register = null;
       toggleLoginModal();
     };
 
@@ -206,6 +226,8 @@ export default {
     return {
       form,
       loading,
+      userError,
+      error,
       isLogin,
       createAccount,
       rememberMe,
