@@ -57,7 +57,9 @@ module.exports = {
     'vue-storefront/no-corecomponent-import': 'error',
     'vue-storefront/no-corecomponent': 'error',
     'vue-storefront/no-corepage-import': 'error',
-    'vue-storefront/no-corepage': 'error'
+    'vue-storefront/no-corepage': 'error',
+    'vue/no-template-shadow': 'off',
+    'vue/return-in-computed-property': 'off'
   },
   overrides: [
     {
